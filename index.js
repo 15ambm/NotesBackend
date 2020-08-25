@@ -1,6 +1,5 @@
 require('dotenv').config()
 const express = require('express')
-const { response } = require('express')
 const app = express()
 const cors = require('cors')
 
@@ -41,6 +40,16 @@ const generateID = () => {
     return maxID + 1
 }
 
+const errorHandler = (error, request, response, next) => {
+    console.error(error.message)
+  
+    if (error.name === 'CastError') {
+      return response.status(400).send({ error: 'malformatted id' })
+    } 
+  
+    next(error)
+  }
+
 
 app.post('/api/notes', (req, res) => {
     const body = req.body
@@ -77,29 +86,47 @@ app.get('/api/notes', (req, res) => {
     })
 })
 
-app.get('/api/notes/:id', (req, res) => {
+app.get('/api/notes/:id', (req, res, next) => {
     Note.findById(req.params.id).then(note => {
-        res.json(note)
+        if(note){
+            res.json(note)
+        } else {
+            res.status(404).end()
+        }
     })
     .catch(err => {
-        console.log(err)
+        next(err)
     })
 
 })
 
 app.delete('/api/notes/:id', (req, res) => {
-    const id = Number(req.params.id)
-    notes = notes.filter(note => note.id === id)
-    res.status(204).end()
+    const id = req.params.id
+    Note.findByIdAndRemove(id)
+    .then(result => {
+        if(result) res.status(204).end()
+        else res.status(404).end()
+    })
+    .catch(err => next(err))
 })
 
 app.put('/api/notes/:id', (req, res) => {
-    const id = Number(req.params.id)
+    const id = req.params.id
     const object = req.body
-    const updatedNotes = notes.map(item => item.id === id ? object : item)
-    notes = updatedNotes
-    res.json(object)
+
+    const note = {
+        important: object.important
+    }
+
+    Note.findByIdAndUpdate(id, note, {new:true})
+    .then(updatedNote => {
+        res.json(updatedNote)
+    })
+    .catch(err => next(err))
+
 })
+
+app.use(errorHandler)
 
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`)
