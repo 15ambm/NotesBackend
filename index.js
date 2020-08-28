@@ -1,36 +1,16 @@
-require('dotenv').config()
-const express = require('express')
+require("dotenv").config()
+const express = require("express")
 const app = express()
-const cors = require('cors')
+const cors = require("cors")
 
-const Note = require('./models/note')
+const Note = require("./models/note")
 
 app.use(cors())
 app.use(express.json())
-app.use(express.static('build'))
+app.use(express.static("build"))
 
+// eslint-disable-next-line no-undef
 const PORT = process.env.PORT
-
-let notes = [
-    {
-      id: 1,
-      content: "The first note",
-      date: "2019-05-30T17:30:31.098Z",
-      important: true
-    },
-    {
-      id: 2,
-      content: "Browser can execute only Javascript",
-      date: "2019-05-30T18:39:34.091Z",
-      important: false
-    },
-    {
-      id: 3,
-      content: "GET and POST are the most important methods of HTTP protocol",
-      date: "2019-05-30T19:20:14.298Z",
-      important: true
-    }
-  ]
 
   
 // const generateID = () => {
@@ -43,17 +23,17 @@ let notes = [
 const errorHandler = (error, request, response, next) => {
     console.error(error.message)
   
-    if (error.name === 'CastError') {
-      return response.status(400).send({ error: 'malformatted id' })
-    } else if (error.name === 'ValidationError') {
+    if (error.name === "CastError") {
+        return response.status(400).send({ error: "malformatted id" })
+    } else if (error.name === "ValidationError") {
         return response.status(400).json({error: error.message})
     }
   
     next(error)
-  }
+}
 
 
-app.post('/api/notes', (req, res, next) => {
+app.post("/api/notes", (req, res, next) => {
     const body = req.body
     
     // if (!body.content) {
@@ -67,24 +47,24 @@ app.post('/api/notes', (req, res, next) => {
     })
 
     note.save()
-    .then(savedNote => savedNote.toJSON())
-    .then(formattedNote => res.json(formattedNote))
-    .catch(err => next(err))
+        .then(savedNote => savedNote.toJSON())
+        .then(formattedNote => res.json(formattedNote))
+        .catch(err => next(err))
 })
 
-app.get('/', (req, res) => {
+app.get("/", (req, res) => {
     res.send(
-        '<h1>Hello World</h1>'
+        "<h1>Hello World</h1>"
     )
 })
 
-app.get('/api/notes', (req, res) => {
+app.get("/api/notes", (req, res) => {
     Note.find({}).then(notes => {
         res.json(notes)
     })
 })
 
-app.get('/api/notes/:id', (req, res, next) => {
+app.get("/api/notes/:id", (req, res, next) => {
     Note.findById(req.params.id).then(note => {
         if(note){
             res.json(note)
@@ -92,23 +72,23 @@ app.get('/api/notes/:id', (req, res, next) => {
             res.status(404).end()
         }
     })
-    .catch(err => {
-        next(err)
-    })
+        .catch(err => {
+            next(err)
+        })
 
 })
 
-app.delete('/api/notes/:id', (req, res) => {
+app.delete("/api/notes/:id", (req, res, next) => {
     const id = req.params.id
     Note.findByIdAndRemove(id)
-    .then(result => {
-        if(result) res.status(204).end()
-        else res.status(404).end()
-    })
-    .catch(err => next(err))
+        .then(result => {
+            if(result) res.status(204).end()
+            else res.status(404).end()
+        })
+        .catch(err => next(err))
 })
 
-app.put('/api/notes/:id', (req, res) => {
+app.put("/api/notes/:id", (req, res, next) => {
     const id = req.params.id
     const object = req.body
 
@@ -117,10 +97,10 @@ app.put('/api/notes/:id', (req, res) => {
     }
 
     Note.findByIdAndUpdate(id, note, {new:true})
-    .then(updatedNote => {
-        res.json(updatedNote)
-    })
-    .catch(err => next(err))
+        .then(updatedNote => {
+            res.json(updatedNote)
+        })
+        .catch(err => next(err))
 
 })
 
