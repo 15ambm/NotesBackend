@@ -1,13 +1,13 @@
 
 const mongoose = require("mongoose")
+const config = require("../utils/config")
 mongoose.set("useFindAndModify", false)
 
 // eslint-disable-next-line no-undef
-const url = process.env.MONGODB_URI
 
-console.log("connecting to", url)
+console.log("connecting to", config.MONGODB_URI)
 
-mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(config.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => {
         console.log("connected to MongoDB")
     })

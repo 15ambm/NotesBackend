@@ -1,7 +1,10 @@
-require("dotenv").config()
+
 const express = require("express")
 const app = express()
 const cors = require("cors")
+
+const config = require("./utils/config")
+const logger = require("./utils/logger")
 
 const Note = require("./models/note")
 
@@ -10,15 +13,6 @@ app.use(express.json())
 app.use(express.static("build"))
 
 // eslint-disable-next-line no-undef
-const PORT = process.env.PORT
-
-  
-// const generateID = () => {
-//     const maxID = notes.length > 0
-//     ? Math.max(...notes.map(note => note.id))
-//     : 0
-//     return maxID + 1
-// }
 
 const errorHandler = (error, request, response, next) => {
     console.error(error.message)
@@ -106,6 +100,6 @@ app.put("/api/notes/:id", (req, res, next) => {
 
 app.use(errorHandler)
 
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`)
+app.listen(config.PORT, () => {
+    console.log(`Server running on port ${config.PORT}`)
 })
