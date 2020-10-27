@@ -1,19 +1,8 @@
 
 const mongoose = require("mongoose")
-const config = require("../utils/config")
 mongoose.set("useFindAndModify", false)
 
 // eslint-disable-next-line no-undef
-
-console.log("connecting to", config.MONGODB_URI)
-
-mongoose.connect(config.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-    .then(() => {
-        console.log("connected to MongoDB")
-    })
-    .catch((error) => {
-        console.log("error connecting to MongoDB:", error.message)
-    })
 
 const noteSchema = new mongoose.Schema({
     content: {
