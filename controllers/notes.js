@@ -3,68 +3,49 @@ const notesRouter = require('express').Router()
 const Note = require('../models/note')
 
 
-notesRouter.post('/', (req, res, next) => {
+notesRouter.post('/', async (req, res, next) => {
     const body = req.body
-    
-    // if (!body.content) {
-    //     return res.status(400).json({ error: 'content missing'})
-    // }
-
     const note = new Note({
         content:body.content,
         date: new Date(),
         important: body.important || false
     })
-    note.save()
-        .then(savedNote => savedNote.toJSON())
-        .then(formattedNote => res.json(formattedNote))
-        .catch(err => next(err))
+    const savedNote = await note.save()
+    res.json(savedNote)
 })
 
-// app.get("/", (req, res) => {
-//     res.send(
-//         "<h1>Hello World</h1>"
-//     )
-// })
-
-notesRouter.get('/', (req, res) => {
-    Note.find({}).then(notes => {
-        res.json(notes)
-    })
+notesRouter.get('/', async (req, res) => {
+    const notes = await Note.find({})
+    res.json(notes)
 })
 
-notesRouter.get('/:id', (req, res, next) => {
-    Note.findById(req.params.id).then(note => {
-        if(note){
-            res.json(note)
-        } else {
-            res.status(404).end()
-        }
-    })
-        .catch(err => { next(err) })
+notesRouter.get('/:id', async (req, res, next) => {
+    const note = await Note.findById(req.params.id)
+    if(note){
+        res.json(note)
+    } else {
+        res.status(404).end()
+    }
 })
 
-notesRouter.delete('/:id', (req, res, next) => {
+notesRouter.delete('/:id', async (req, res, next) => {
     const id = req.params.id
-    Note.findByIdAndRemove(id)
-        .then(result => {
-            if(result) res.status(204).end()
-            else res.status(404).end()
-        })
-        .catch(err => next(err))
+    const result = await Note.findByIdAndRemove(id)
+    if(result) {
+        res.status(204).end()
+    } else {
+        res.status(404).end()
+    }
 })
 
-notesRouter.put('/:id', (req, res, next) => {
+notesRouter.put('/:id', async (req, res, next) => {
     const id = req.params.id
     const object = req.body
     const note = {
         important: object.important
     }
-    Note.findByIdAndUpdate(id, note, {new:true})
-        .then(updatedNote => {
-            res.json(updatedNote)
-        })
-        .catch(err => next(err))
+    const updatedNote = await Note.findByIdAndUpdate(id, note, {new:true})
+    res.json(updatedNote)
 })
 
 
