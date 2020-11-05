@@ -1,27 +1,27 @@
 module.exports = {
-    "env": {
-        "browser": true,
-        "commonjs": true,
-        "es2020": true
+    'env': {
+        'browser': true,
+        'commonjs': true,
+        'es2020': true
     },
-    "extends": "eslint:recommended",
-    "parserOptions": {
-        "ecmaVersion": 12
+    'extends': 'eslint:recommended',
+    'parserOptions': {
+        'ecmaVersion': 12
     },
-    "rules": {
-        "no-unused-vars":"error",
-        "indent": [
-            "error",
+    'rules': {
+        'no-unused-vars':'error',
+        'indent': [
+            'error',
             4
         ],
-        "linebreak-style":0,
-        "quotes": [
-            "error",
-            "double"
+        'linebreak-style':0,
+        'quotes': [
+            'error',
+            'single'
         ],
-        "semi": [
-            "error",
-            "never"
+        'semi': [
+            'error',
+            'never'
         ]
     }
 }
