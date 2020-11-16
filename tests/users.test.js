@@ -1,5 +1,5 @@
+/* eslint-disable no-undef */
 
-const helper = require('./test_helper')
 const mongoose = require('mongoose')
 const supertest = require('supertest')
 const app = require('../app')
@@ -24,7 +24,7 @@ describe('When there is one User in DB initially', () => {
             name:'mase',
             password:'secure12345'
         }
-       await api
+        await api
             .post('/api/users')
             .send(initialUserData)
             .expect(200)
@@ -45,7 +45,7 @@ describe('When there is one User in DB initially', () => {
             name:'alex',
             password:'secure12345'
         }
-       const result = await api
+        const result = await api
             .post('/api/users')
             .send(initialUserData)
             .expect(400)
