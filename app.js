@@ -3,6 +3,7 @@ const app = express()
 const cors = require('cors')
 require('express-async-errors')
 const notesRouter = require('./controllers/notes')
+const usersRouter = require('./controllers/users')
 const config = require('./utils/config')
 const logger = require('./utils/logger')
 const mongoose = require('mongoose')
@@ -24,6 +25,7 @@ app.use(express.json())
 app.use(express.static('build'))
 
 app.use('/api/notes', notesRouter)
+app.use('/api/users', usersRouter)
 // eslint-disable-next-line no-undef
 
 const errorHandler = (error, request, response, next) => {
