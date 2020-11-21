@@ -4,19 +4,29 @@ const helper = require('./test_helper')
 const mongoose = require('mongoose')
 const supertest = require('supertest')
 const app = require('../app')
+const bcrypt = require('bcrypt')
 
 const api = supertest(app)
 
 const Note = require('../models/note')
+const User = require('../models/user')
 
 beforeEach(async () => {
     await Note.deleteMany({})
+    await User.deleteMany({})
 
     const noteObjects = helper.initialNotes
         .map(note => new Note(note))
     const promiseArray = noteObjects.map(note => note.save())
     await Promise.all(promiseArray)
 
+    const passwordHash = await bcrypt.hash('password', 10)
+    const oneUser = {
+        username: 'Gooby',
+        name:'testuser',
+        passwordHash
+    }
+    await new User(oneUser).save()
 
     // for (let note of helper.initialNotes) {
     //     let noteObject = new Note(note)
@@ -25,6 +35,17 @@ beforeEach(async () => {
 })
 
 test('a valid note can be added', async () => {
+
+    const loginCredentials = {
+        username:'Gooby',
+        password:'password'
+    }
+
+    const loginResponse = await api
+        .post('/api/login')
+        .send(loginCredentials)
+        .expect(200)
+    
     const newNote = {
         content: 'some great new content',
         important: true
@@ -32,6 +53,7 @@ test('a valid note can be added', async () => {
 
     await api  
         .post('/api/notes')
+        .set('Authorization', `bearer ${loginResponse.body.token}`)
         .send(newNote)
         .expect(200)
         .expect('Content-Type', /application\/json/)
@@ -45,12 +67,25 @@ test('a valid note can be added', async () => {
 })
 
 test('a note with no content is not added', async () => {
+
+
+    const loginCredentials = {
+        username:'Gooby',
+        password:'password'
+    }
+
+    const loginResponse = await api
+        .post('/api/login')
+        .send(loginCredentials)
+        .expect(200)
+
     const newNote = {
         important: true
     }
 
     await api
         .post('/api/notes')
+        .set('Authorization', `bearer ${loginResponse.body.token}`)
         .send(newNote)
         .expect(400)
 
